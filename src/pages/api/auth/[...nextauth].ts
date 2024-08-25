@@ -83,6 +83,13 @@ export default NextAuth({
         return token;
       }
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect users to the employee list page after sign-in
+      if (url === baseUrl || url.startsWith(`${baseUrl}/create-employee`) || url.startsWith(`${baseUrl}/other-page`)) {
+        return baseUrl + '/employees';
+      }
+      return url;
+    },
   },
   pages: {
     signIn: '/auth/signin',

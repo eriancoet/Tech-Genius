@@ -22,8 +22,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             </Link>
           </li>
           <li>
-            <Link href="../pages/employees/create.tsx">
-              <span className="text-blue-400 hover:underline text-sm">Create Employee</span>
+            <Link href="/employees/create">
+              <span className="text-sm">Create Employee</span>
             </Link>
           </li>
         </ul>

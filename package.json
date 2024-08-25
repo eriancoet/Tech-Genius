@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed": "ts-node prisma/seed.ts",
+    "prisma:seed": "ts-node prisma/seed.ts",
     "build": "next build",
     "db:generate": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
@@ -58,6 +58,7 @@
     "prisma": "^5.18.0",
     "tailwindcss": "^3.4.10",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
   },
   "ct3aMetadata": {
