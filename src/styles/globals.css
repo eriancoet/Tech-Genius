@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+#__next {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the app takes at least the full height of the viewport */
+}
+/* You can also add these styles in your global CSS file or use inline styles */
+.sidebar {
+    width: 250px;
+    height: 400px;
+  }
+  header {
+    width: 100%; /* Ensure the header takes the full width */
+  }

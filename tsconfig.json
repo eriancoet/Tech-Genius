@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noEmit": true,
+    "incremental": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "isolatedModules": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "prisma/**/*.ts",
+    "scripts/test-db.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "next.config.js",
+    "postcss.config.cjs",
+    "prettier.config.js",
+    "src/env.js",
+    ".eslintrc.cjs"
+  ]
+}
