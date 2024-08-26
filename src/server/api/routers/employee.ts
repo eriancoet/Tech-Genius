@@ -62,4 +62,38 @@ export const employeeRouter = createTRPCRouter({
         },
       });
     }),
+
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+        telephoneNumber: z.string(),
+        emailAddress: z.string().email(),
+        managerId: z.string(),
+        status: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.employee.update({
+        where: { id: input.id },
+        data: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          telephoneNumber: input.telephoneNumber,
+          emailAddress: input.emailAddress,
+          managerId: input.managerId,
+          status: input.status,
+        },
+      });
+    }),
+
+  delete: publicProcedure
+    .input(z.string()) // Expecting the employee id as a string
+    .mutation(async ({ input, ctx }) => {
+      return ctx.prisma.employee.delete({
+        where: { id: input },
+      });
+    }),
 });

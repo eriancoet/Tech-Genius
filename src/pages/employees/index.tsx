@@ -2,11 +2,45 @@ import { NextPage } from 'next';
 import { trpc } from '../../utils/trpc';
 import Layout from '../../components/Layout';
 import { HiFilter, HiSearch } from 'react-icons/hi'; // Import filter and search icons from react-icons
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 const EmployeeList: NextPage = () => {
-  const { data: employees, isLoading } = trpc.employee.getAll.useQuery();
+  const router = useRouter();
+  const { data: employees, isLoading, refetch } = trpc.employee.getAll.useQuery();
+  const deleteEmployee = trpc.employee.delete.useMutation();
+
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [managerFilter, setManagerFilter] = useState('');
+
+  const handleEdit = (id: string) => {
+    router.push(`/employees/${id}/edit`);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Are you sure you want to delete this employee?')) {
+      try {
+        await deleteEmployee.mutateAsync(id);
+        refetch(); // Refetch the list of employees after deletion
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+      }
+    }
+  };
 
   if (isLoading) return <div>Loading...</div>;
+
+  const filteredEmployees = employees?.filter(employee => {
+    return (
+      (statusFilter === 'All' || employee.status === statusFilter) &&
+      (departmentFilter === '' || employee.department === departmentFilter) &&
+      (managerFilter === '' || employee.managerId === managerFilter) &&
+      (employee.firstName.toLowerCase().includes(search.toLowerCase()) || 
+       employee.lastName.toLowerCase().includes(search.toLowerCase()))
+    );
+  });
 
   return (
     <Layout>
@@ -17,11 +51,10 @@ const EmployeeList: NextPage = () => {
         <div className="w-full max-w-3xl">
           {/* Filter Section */}
           <aside className="bg-gray-200 p-4 mb-4 border border-gray-300 rounded-md relative">
-            {/* Heading with no background, positioned on top of the border aligned horizontally to the left */}
             <h2 className="text-lg font-semibold absolute -top-4 left-4 border-b border-gray-300 px-2">
               Filter
             </h2>
-            
+
             {/* Filter Options */}
             <div className="space-y-4 mt-8">
               {/* Status Filter */}
@@ -30,11 +63,12 @@ const EmployeeList: NextPage = () => {
                 <select
                   id="status"
                   className="border border-gray-300 rounded-md"
-                  style={{ width: '60%', paddingLeft: '40px', paddingRight: '40px' }}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option>Active</option>
-                  <option>All</option>
-                  <option>Deactive Only</option>
+                  <option value="All">All</option>
+                  <option value="Active">Active</option>
+                  <option value="Deactive">Deactive Only</option>
                 </select>
               </div>
 
@@ -44,9 +78,10 @@ const EmployeeList: NextPage = () => {
                 <select
                   id="department"
                   className="border border-gray-300 rounded-md"
-                  style={{ width: '60%', paddingLeft: '40px', paddingRight: '40px' }}
+                  value={departmentFilter}
+                  onChange={(e) => setDepartmentFilter(e.target.value)}
                 >
-                  <option>Select</option>
+                  <option value="">Select</option>
                   {/* Add department options here */}
                 </select>
               </div>
@@ -57,9 +92,10 @@ const EmployeeList: NextPage = () => {
                 <select
                   id="manager"
                   className="border border-gray-300 rounded-md"
-                  style={{ width: '60%', paddingLeft: '40px', paddingRight: '40px' }}
+                  value={managerFilter}
+                  onChange={(e) => setManagerFilter(e.target.value)}
                 >
-                  <option>Select</option>
+                  <option value="">Select</option>
                   {/* Add manager options here */}
                 </select>
               </div>
@@ -96,13 +132,15 @@ const EmployeeList: NextPage = () => {
                 placeholder="Search"
                 className="border border-gray-300 rounded-md px-2 py-1"
                 style={{ width: '90px' }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
 
           {/* Employee List */}
           <div className="overflow-x-auto">
-            {employees && employees.length > 0 ? (
+            {filteredEmployees && filteredEmployees.length > 0 ? (
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                   <tr>
@@ -116,10 +154,21 @@ const EmployeeList: NextPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {employees.map(employee => (
+                  {filteredEmployees.map(employee => (
                     <tr key={employee.id}>
-                      <td className="py-2 px-4 border-b border-gray-300">
-                        {/* Add action buttons or links here */}
+                      <td className="py-2 px-4 border-b border-gray-300 flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(employee.id)}
+                          className="bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(employee.id)}
+                          className="bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                          Delete
+                        </button>
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300">{employee.firstName}</td>
                       <td className="py-2 px-4 border-b border-gray-300">{employee.lastName}</td>
