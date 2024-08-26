@@ -1,14 +1,14 @@
 import { NextPage } from 'next';
 import { trpc } from '../../utils/trpc';
 import Layout from '../../components/Layout';
-import { HiFilter, HiSearch } from 'react-icons/hi'; // Import filter and search icons from react-icons
+import { HiFilter, HiSearch } from 'react-icons/hi';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 const EmployeeList: NextPage = () => {
   const router = useRouter();
   const { data: employees, isLoading, refetch } = trpc.employee.getAll.useQuery();
-  const deleteEmployee = trpc.employee.delete.useMutation();
+  const updateEmployee = trpc.employee.update.useMutation(); // Use update mutation for deactivation
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -19,13 +19,24 @@ const EmployeeList: NextPage = () => {
     router.push(`/employees/${id}/edit`);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this employee?')) {
+  const handleDeactivate = async (id: string) => {
+    if (window.confirm('Are you sure you want to deactivate this employee?')) {
       try {
-        await deleteEmployee.mutateAsync(id);
-        refetch(); // Refetch the list of employees after deletion
+        const employee = employees?.find(emp => emp.id === id);
+        if (employee) {
+          await updateEmployee.mutateAsync({
+            id: employee.id,
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            telephoneNumber: employee.telephoneNumber,
+            emailAddress: employee.emailAddress,
+            managerId: employee.managerId,
+            status: false, // Set status to inactive
+          });
+          refetch(); // Refetch the list of employees after deactivation
+        }
       } catch (error) {
-        console.error('Error deleting employee:', error);
+        console.error('Error deactivating employee:', error);
       }
     }
   };
@@ -153,7 +164,7 @@ const EmployeeList: NextPage = () => {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(employee.id)}
+                          onClick={() => handleDeactivate(employee.id)}
                           className="py-2 px-4 border-b border-gray-300 text-xs"
                         >
                           Deactivate
