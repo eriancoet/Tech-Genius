@@ -24,15 +24,9 @@ model Employee {
   telephoneNumber String
   emailAddress    String   @unique
   managerId       String
-  status          String
-  user            User?    @relation // Correctly defined here
+  status          Boolean  // Change to Boolean
+  user            User?    @relation
 }
-
-
-
-
-
-
 
 
 model Department {

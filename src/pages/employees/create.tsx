@@ -11,7 +11,7 @@ const CreateEmployee: NextPage = () => {
     telephoneNumber: '',
     emailAddress: '',
     managerId: '',
-    status: '',
+    status: false, // Default boolean value
   });
 
   const [errors, setErrors] = useState({
@@ -52,7 +52,7 @@ const CreateEmployee: NextPage = () => {
     let hasError = false;
 
     for (const key in formData) {
-      if (!formData[key as keyof typeof formData]) {
+      if (!formData[key as keyof typeof formData] && key !== 'status') {
         newErrors[key as keyof typeof formData] = 'This field is required';
         hasError = true;
       }
@@ -76,11 +76,10 @@ const CreateEmployee: NextPage = () => {
 
     try {
       await createEmployee.mutateAsync({
-        ...formData,  // Remove userId
+        ...formData,
       });
     } catch (error) {
       console.error('Error creating employee:', error);
-      // Handle error display or additional logic here
     }
   };
 
@@ -95,13 +94,40 @@ const CreateEmployee: NextPage = () => {
                 <label className="text-sm font-semibold mb-1">
                   {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                 </label>
-                <input
-                  type={key === 'emailAddress' ? 'email' : 'text'}
-                  placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                  value={(formData as any)[key]}
-                  onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                  className="border border-gray-300 p-2 rounded-md w-full"
-                />
+                {key === 'status' ? (
+                  <div className="flex items-center space-x-4">
+                    <label>
+                      <input
+                        type="radio"
+                        name="status"
+                        value="true"
+                        checked={formData.status === true}
+                        onChange={() => setFormData({ ...formData, status: true })}
+                        className="mr-2"
+                      />
+                      Active
+                    </label>
+                    <label>
+                      <input
+                        type="radio"
+                        name="status"
+                        value="false"
+                        checked={formData.status === false}
+                        onChange={() => setFormData({ ...formData, status: false })}
+                        className="mr-2"
+                      />
+                      Inactive
+                    </label>
+                  </div>
+                ) : (
+                  <input
+                    type={key === 'emailAddress' ? 'email' : 'text'}
+                    placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                    value={(formData as any)[key]}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="border border-gray-300 p-2 rounded-md w-full"
+                  />
+                )}
                 {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
               </div>
             ))}

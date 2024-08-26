@@ -4,17 +4,22 @@ import bcrypt from 'bcrypt';
 
 export const employeeRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.employee.findMany({
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        telephoneNumber: true,
-        emailAddress: true,
-        managerId: true,
-        status: true,
-      },
-    });
+    try {
+      return await ctx.prisma.employee.findMany({
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          telephoneNumber: true,
+          emailAddress: true,
+          managerId: true,
+          status: true, // Boolean status
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      throw new Error('Failed to fetch employees');
+    }
   }),
 
   create: publicProcedure
@@ -25,42 +30,47 @@ export const employeeRouter = createTRPCRouter({
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
         managerId: z.string(),
-        status: z.string(),
-        userId: z.string().optional(), // Make userId optional if creating a new user
+        status: z.boolean(), // Boolean status
+        userId: z.string().optional(), // Remove if not used
       })
     )
     .mutation(async ({ input, ctx }) => {
-      let userId = input.userId;
+      try {
+        let userId = input.userId;
 
-      if (!userId) {
-        // Hash the default password
-        const hashedPassword = await bcrypt.hash('Password123#', 10);
+        if (!userId) {
+          // Hash the default password
+          const hashedPassword = await bcrypt.hash('Password123#', 10);
 
-        // Create a new user if userId is not provided
-        const user = await ctx.prisma.user.create({
+          // Create a new user if userId is not provided
+          const user = await ctx.prisma.user.create({
+            data: {
+              email: input.emailAddress,
+              password: hashedPassword,
+              role: 'EMPLOYEE',
+            },
+          });
+          userId = user.id;
+        }
+
+        // Create the employee and link to the user
+        return await ctx.prisma.employee.create({
           data: {
-            email: input.emailAddress,
-            password: hashedPassword, // Save the hashed password
-            role: 'EMPLOYEE', // Assign the role for the new user
+            firstName: input.firstName,
+            lastName: input.lastName,
+            telephoneNumber: input.telephoneNumber,
+            emailAddress: input.emailAddress,
+            managerId: input.managerId,
+            status: input.status, // Boolean status
+            user: {
+              connect: { id: userId }, // Connect the employee with the existing or new user
+            },
           },
         });
-        userId = user.id;
+      } catch (error) {
+        console.error('Error creating employee:', error);
+        throw new Error('Failed to create employee');
       }
-
-      // Create the employee and link to the user
-      return ctx.prisma.employee.create({
-        data: {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          telephoneNumber: input.telephoneNumber,
-          emailAddress: input.emailAddress,
-          managerId: input.managerId,
-          status: input.status,
-          user: {
-            connect: { id: userId }, // Connect the employee with the existing or new user
-          },
-        },
-      });
     }),
 
   update: publicProcedure
@@ -72,28 +82,38 @@ export const employeeRouter = createTRPCRouter({
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
         managerId: z.string(),
-        status: z.string(),
+        status: z.boolean(), // Boolean status
       })
     )
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.employee.update({
-        where: { id: input.id },
-        data: {
-          firstName: input.firstName,
-          lastName: input.lastName,
-          telephoneNumber: input.telephoneNumber,
-          emailAddress: input.emailAddress,
-          managerId: input.managerId,
-          status: input.status,
-        },
-      });
+      try {
+        return await ctx.prisma.employee.update({
+          where: { id: input.id },
+          data: {
+            firstName: input.firstName,
+            lastName: input.lastName,
+            telephoneNumber: input.telephoneNumber,
+            emailAddress: input.emailAddress,
+            managerId: input.managerId,
+            status: input.status, // Boolean status
+          },
+        });
+      } catch (error) {
+        console.error('Error updating employee:', error);
+        throw new Error('Failed to update employee');
+      }
     }),
 
   delete: publicProcedure
     .input(z.string()) // Expecting the employee id as a string
     .mutation(async ({ input, ctx }) => {
-      return ctx.prisma.employee.delete({
-        where: { id: input },
-      });
+      try {
+        return await ctx.prisma.employee.delete({
+          where: { id: input },
+        });
+      } catch (error) {
+        console.error('Error deleting employee:', error);
+        throw new Error('Failed to delete employee');
+      }
     }),
 });

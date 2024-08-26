@@ -34,13 +34,14 @@ const EmployeeList: NextPage = () => {
 
   const filteredEmployees = employees?.filter(employee => {
     return (
-      (statusFilter === 'All' || employee.status === statusFilter) &&
+      (statusFilter === 'All' || (statusFilter === 'Active' && employee.status) || (statusFilter === 'Deactive' && !employee.status)) &&
       (departmentFilter === '' || employee.department === departmentFilter) &&
       (managerFilter === '' || employee.managerId === managerFilter) &&
       (employee.firstName.toLowerCase().includes(search.toLowerCase()) || 
        employee.lastName.toLowerCase().includes(search.toLowerCase()))
     );
   });
+  
 
   return (
     <Layout>

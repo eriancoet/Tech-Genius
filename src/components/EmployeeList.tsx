@@ -8,7 +8,7 @@ interface Employee {
   lastName: string;
   telephoneNumber: string;
   emailAddress: string;
-  status: string;
+  status: boolean; // Change to boolean
   managerId: string;
 }
 
@@ -18,20 +18,32 @@ interface EmployeeListProps {
 
 const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const router = useRouter();
-  const deleteEmployee = trpc.employee.delete.useMutation(); // Use delete mutation
+  const deactivateEmployee = trpc.employee.update.useMutation(); // Use update mutation for deactivation
 
   const handleEdit = (id: string) => {
     router.push(`/employees/${id}/edit`);
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this employee?')) {
+  const handleDeactivate = async (id: string) => {
+    if (window.confirm('Are you sure you want to deactivate this employee?')) {
       try {
-        await deleteEmployee.mutateAsync(id);
-        // Optionally, refetch or update local state to remove the deleted employee
-        router.reload(); // Reload the page to reflect changes
+        // Assuming that you need to provide all fields in the mutation
+        const employee = employees.find(emp => emp.id === id);
+        if (employee) {
+          await deactivateEmployee.mutateAsync({
+            id: employee.id,
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            telephoneNumber: employee.telephoneNumber,
+            emailAddress: employee.emailAddress,
+            managerId: employee.managerId,
+            status: false,
+          });
+          // Optionally, refetch or update local state to reflect the changes
+          router.reload(); // Reload the page to reflect changes
+        }
       } catch (error) {
-        console.error('Failed to delete employee:', error);
+        console.error('Failed to deactivate employee:', error);
       }
     }
   };
@@ -54,7 +66,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
           </thead>
           <tbody>
             {employees.length > 0 ? (
-              employees.map(employee => (
+              employees.map((employee) => (
                 <tr key={employee.id}>
                   <td className="py-2 px-4 border-b flex space-x-2">
                     <button
@@ -63,19 +75,23 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(employee.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded"
-                    >
-                      Delete
-                    </button>
+                    {employee.status && ( // Only show deactivate button if employee is active
+                      <button
+                        onClick={() => handleDeactivate(employee.id)}
+                        className="bg-red-500 text-white px-4 py-2 rounded"
+                      >
+                        Deactivate
+                      </button>
+                    )}
                   </td>
                   <td className="py-2 px-4 border-b">{employee.firstName}</td>
                   <td className="py-2 px-4 border-b">{employee.lastName}</td>
                   <td className="py-2 px-4 border-b">{employee.telephoneNumber}</td>
                   <td className="py-2 px-4 border-b">{employee.emailAddress}</td>
                   <td className="py-2 px-4 border-b">{employee.managerId}</td>
-                  <td className="py-2 px-4 border-b">{employee.status}</td>
+                  <td className="py-2 px-4 border-b">
+                    {employee.status ? 'Active' : 'Inactive'}
+                  </td>
                 </tr>
               ))
             ) : (
