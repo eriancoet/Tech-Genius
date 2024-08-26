@@ -52,7 +52,11 @@ Run the Prisma migration to set up the database schema:
 
 npx prisma migrate dev
 
-5. **Start the development server:**
+6. **Run create-user script :**
+
+npm run create-user
+
+7. **Start the development server:**
 
 Start the development server:
 

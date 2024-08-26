@@ -32,8 +32,7 @@ const Navbar: React.FC = () => {
             </button>
           </>
         ) : (
-          <Link href="/auth/signin">
-            <a className="text-blue-400 hover:underline">Sign In</a>
+          <Link href="/auth/signin" className="text-blue-400 hover:underline">Sign In
           </Link>
         )}
       </div>
