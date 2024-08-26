@@ -8,7 +8,7 @@ interface Employee {
   lastName: string;
   telephoneNumber: string;
   emailAddress: string;
-  status: boolean; // Change to boolean
+  status: boolean; 
   managerId: string;
 }
 
@@ -18,7 +18,9 @@ interface EmployeeListProps {
 
 const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const router = useRouter();
-  const deactivateEmployee = trpc.employee.update.useMutation(); // Use update mutation for deactivation
+  const deactivateEmployee = trpc.employee.update.useMutation(); 
+
+  console.log('Employees:', employees);
 
   const handleEdit = (id: string) => {
     router.push(`/employees/${id}/edit`);
@@ -27,7 +29,6 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const handleDeactivate = async (id: string) => {
     if (window.confirm('Are you sure you want to deactivate this employee?')) {
       try {
-        // Assuming that you need to provide all fields in the mutation
         const employee = employees.find(emp => emp.id === id);
         if (employee) {
           await deactivateEmployee.mutateAsync({
@@ -39,8 +40,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
             managerId: employee.managerId,
             status: false,
           });
-          // Optionally, refetch or update local state to reflect the changes
-          router.reload(); // Reload the page to reflect changes
+          router.reload();
         }
       } catch (error) {
         console.error('Failed to deactivate employee:', error);
@@ -52,16 +52,16 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
     <div className="flex flex-col flex-grow p-4">
       <h1 className="text-2xl font-bold mb-4">Employees</h1>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200">
+        <table className="min-w-full bg-white border border-gray-200 text-sm">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">Actions</th>
-              <th className="py-2 px-4 border-b">First Name</th>
-              <th className="py-2 px-4 border-b">Last Name</th>
-              <th className="py-2 px-4 border-b">Telephone</th>
-              <th className="py-2 px-4 border-b">Email Address</th>
-              <th className="py-2 px-4 border-b">Manager</th>
-              <th className="py-2 px-4 border-b">Status</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '10%' }}>Actions</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%' }}>First Name</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%' }}>Last Name</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%' }}>Telephone</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '20%' }}>Email Address</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%' }}>Manager</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '10%' }}>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -71,32 +71,30 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
                   <td className="py-2 px-4 border-b flex space-x-2">
                     <button
                       onClick={() => handleEdit(employee.id)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
+                      className="text-blue-500 hover:underline text-xs px-2 py-1 rounded border border-blue-500"
                     >
                       Edit
                     </button>
-                    {employee.status && ( // Only show deactivate button if employee is active
+                    {employee.status && (
                       <button
                         onClick={() => handleDeactivate(employee.id)}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        className="text-red-500 hover:underline text-xs px-2 py-1 rounded border border-red-500"
                       >
                         Deactivate
                       </button>
                     )}
                   </td>
-                  <td className="py-2 px-4 border-b">{employee.firstName}</td>
-                  <td className="py-2 px-4 border-b">{employee.lastName}</td>
-                  <td className="py-2 px-4 border-b">{employee.telephoneNumber}</td>
-                  <td className="py-2 px-4 border-b">{employee.emailAddress}</td>
-                  <td className="py-2 px-4 border-b">{employee.managerId}</td>
-                  <td className="py-2 px-4 border-b">
-                    {employee.status ? 'Active' : 'Inactive'}
-                  </td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.firstName}</td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.lastName}</td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.telephoneNumber}</td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.emailAddress}</td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.managerId}</td>
+                  <td className="py-2 px-4 border-b text-xs">{employee.status ? 'Active' : 'Inactive'}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={7} className="py-2 px-4 border-b text-center">
+                <td colSpan={7} className="py-2 px-4 border-b text-center text-xs">
                   No employees found.
                 </td>
               </tr>
@@ -106,6 +104,12 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
       </div>
       <div className="mt-4 bg-gray-200 p-4">
         <p>Filter options go here</p>
+        <div className="flex space-x-4">
+          <select className="border border-gray-300 rounded p-1 w-4/5 md:w-3/4 text-xs">
+            {/* Filter options */}
+          </select>
+          {/* Add more filters as needed */}
+        </div>
       </div>
     </div>
   );
