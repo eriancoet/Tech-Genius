@@ -36,30 +36,31 @@ Ensure you have Node.js and npm installed. If not, download and install them fro
 
 2. **Install dependencies:**
 
+```bash
 npm install
-
+```
 3. **Set up environment variables:**
 
-Create a .env file in the root directory and add the necessary environment variables. Example:
-
+Create an .env file in the root directory and add the necessary environment variables. Example:
+```bash
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your_secret
 DATABASE_URL="file:./dev.db"
-
+```
 4. **Set up the database:**
 
 Run the Prisma migration to set up the database schema:
-
+```bash
 npx prisma migrate dev
-
+```
 6. **Run create-user script :**
-
+```bash
 npm run create-user
-
+```
 7. **Start the development server:**
 
 Start the development server:
-
+```bash
 npm run dev
-
+```
 Open your browser and navigate to http://localhost:3000.
