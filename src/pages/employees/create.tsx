@@ -11,7 +11,7 @@ const CreateEmployee: NextPage = () => {
     telephoneNumber: '',
     emailAddress: '',
     managerId: '',
-    status: false, // Default boolean value
+    status: 'active', // Default value for dropdown
   });
 
   const [errors, setErrors] = useState({
@@ -52,7 +52,7 @@ const CreateEmployee: NextPage = () => {
     let hasError = false;
 
     for (const key in formData) {
-      if (!formData[key as keyof typeof formData] && key !== 'status') {
+      if (!formData[key as keyof typeof formData]) {
         newErrors[key as keyof typeof formData] = 'This field is required';
         hasError = true;
       }
@@ -77,6 +77,7 @@ const CreateEmployee: NextPage = () => {
     try {
       await createEmployee.mutateAsync({
         ...formData,
+        status: formData.status === 'active',
       });
     } catch (error) {
       console.error('Error creating employee:', error);
@@ -88,52 +89,71 @@ const CreateEmployee: NextPage = () => {
       <div className="flex flex-col items-start p-4">
         <h1 className="text-2xl font-bold mb-4 border-b border-gray-300 pb-2">Create Employee</h1>
         <div className="w-full max-w-3xl">
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-            {Object.keys(formData).map((key) => (
-              <div key={key} className="flex flex-col">
-                <label className="text-sm font-semibold mb-1">
-                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                </label>
-                {key === 'status' ? (
-                  <div className="flex items-center space-x-4">
-                    <label>
-                      <input
-                        type="radio"
-                        name="status"
-                        value="true"
-                        checked={formData.status === true}
-                        onChange={() => setFormData({ ...formData, status: true })}
-                        className="mr-2"
-                      />
-                      Active
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="status"
-                        value="false"
-                        checked={formData.status === false}
-                        onChange={() => setFormData({ ...formData, status: false })}
-                        className="mr-2"
-                      />
-                      Inactive
-                    </label>
-                  </div>
-                ) : (
-                  <input
-                    type={key === 'emailAddress' ? 'email' : 'text'}
-                    placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                    value={(formData as any)[key]}
-                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="border border-gray-300 p-2 rounded-md w-full"
-                  />
-                )}
-                {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
-              </div>
-            ))}
+          <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4 items-center">
+            <label className="text-sm font-semibold mb-1">First Name</label>
+            <input
+              type="text"
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            />
+            {errors.firstName && <p className="text-red-500 text-sm col-span-3">{errors.firstName}</p>}
+
+            <label className="text-sm font-semibold mb-1">Last Name</label>
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            />
+            {errors.lastName && <p className="text-red-500 text-sm col-span-3">{errors.lastName}</p>}
+
+            <label className="text-sm font-semibold mb-1">Telephone Number</label>
+            <input
+              type="text"
+              placeholder="Telephone Number"
+              value={formData.telephoneNumber}
+              onChange={(e) => setFormData({ ...formData, telephoneNumber: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            />
+            {errors.telephoneNumber && <p className="text-red-500 text-sm col-span-3">{errors.telephoneNumber}</p>}
+
+            <label className="text-sm font-semibold mb-1">Email Address</label>
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={formData.emailAddress}
+              onChange={(e) => setFormData({ ...formData, emailAddress: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            />
+            {errors.emailAddress && <p className="text-red-500 text-sm col-span-3">{errors.emailAddress}</p>}
+
+            <label className="text-sm font-semibold mb-1">Manager ID</label>
+            <input
+              type="text"
+              placeholder="Manager ID"
+              value={formData.managerId}
+              onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            />
+            {errors.managerId && <p className="text-red-500 text-sm col-span-3">{errors.managerId}</p>}
+
+            <label className="text-sm font-semibold mb-1">Status</label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            {errors.status && <p className="text-red-500 text-sm col-span-3">{errors.status}</p>}
+
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 col-span-3"
             >
               Create Employee
             </button>
