@@ -18,6 +18,19 @@ export const departmentRouter = createTRPCRouter({
     }
   }),
 
+  getOne: publicProcedure
+  .input(z.object({ id: z.string() }))
+  .query(async ({ input, ctx }) => {
+    try {
+      return await ctx.prisma.department.findUnique({
+        where: { id: input.id },
+      });
+    } catch (error) {
+      console.error('Error fetching department:', error);
+      throw new Error('Failed to fetch department');
+    }
+  }),
+
   create: publicProcedure
     .input(
       z.object({

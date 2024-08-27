@@ -19,7 +19,7 @@ const DepartmentList: React.FC<DepartmentListProps> = ({ departments }) => {
   const deactivateDepartment = trpc.department.update.useMutation();
 
   const handleEdit = (id: string) => { // Change to string
-    router.push(`/departments/${id}/edit`);
+    router.push(`/department/${id}/edit`);
   };
 
   const handleDeactivate = async (id: string) => { // Change to string

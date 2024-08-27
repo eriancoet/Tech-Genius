@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             </Link>
           </li>
           <li>
-            <Link href="/department/create">
+            <Link href="/departments/create">
               <span className="text-sm">Create Department</span>
             </Link>
           </li>
