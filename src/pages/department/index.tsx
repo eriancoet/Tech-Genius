@@ -124,12 +124,12 @@ const DepartmentList: NextPage = () => {
             {filteredDepartments && filteredDepartments.length > 0 ? (
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
-                  <tr>
-                    <th className="py-2 px-4 border-b border-gray-300">Actions</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Name</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Manager</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Status</th>
-                  </tr>
+                <tr>
+                  <th className="py-2 px-4 border-b border-gray-300 text-xs">Actions</th>
+                  <th className="py-2 px-4 border-b border-gray-300 text-xs">Name</th>
+                  <th className="py-2 px-4 border-b border-gray-300 text-xs">Manager</th>
+                  <th className="py-2 px-4 border-b border-gray-300 text-xs">Status</th>
+                </tr>
                 </thead>
                 <tbody>
                   {filteredDepartments.map(department => (

@@ -48,10 +48,10 @@ const DepartmentList: React.FC<DepartmentListProps> = ({ departments }) => {
         <table className="min-w-full bg-white border border-gray-200 text-sm">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%' }}>Actions</th>
-              <th className="py-2 px-4 border-b text-xs" style={{ width: '35%' }}>Name</th>
-              <th className="py-2 px-4 border-b text-xs" style={{ width: '30%' }}>Manager</th>
-              <th className="py-2 px-4 border-b text-xs" style={{ width: '20%' }}>Status</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '15%', fontSize: '0.875rem' }}>Actions</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '35%', fontSize: '0.875rem' }}>Name</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '30%', fontSize: '0.875rem' }}>Manager</th>
+              <th className="py-2 px-4 border-b text-xs" style={{ width: '20%', fontSize: '0.875rem' }}>Status</th>
             </tr>
           </thead>
           <tbody>

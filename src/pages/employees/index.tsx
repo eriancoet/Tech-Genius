@@ -143,16 +143,16 @@ const EmployeeList: NextPage = () => {
             {filteredEmployees && filteredEmployees.length > 0 ? (
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
-                  <tr>
-                    <th className="py-2 px-4 border-b border-gray-300">Actions</th>
-                    <th className="py-2 px-4 border-b border-gray-300">First Name</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Last Name</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Telephone</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Email Address</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Manager</th>
-                    <th className="py-2 px-4 border-b border-gray-300">Status</th>
-                  </tr>
-                </thead>
+  <tr>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Actions</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">First Name</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Last Name</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Telephone</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Email Address</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Manager</th>
+    <th className="py-2 px-4 border-b border-gray-300 text-xs">Status</th>
+  </tr>
+</thead>
                 <tbody>
                   {filteredEmployees.map(employee => (
                     <tr key={employee.id}>
