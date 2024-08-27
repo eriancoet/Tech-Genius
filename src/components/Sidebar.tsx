@@ -21,9 +21,14 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               <span className="text-sm">Departments</span>
             </Link>
           </li>
-          <li>
+          <li className="mb-2">
             <Link href="/employees/create">
               <span className="text-sm">Create Employee</span>
+            </Link>
+          </li>
+          <li>
+            <Link href="/department/create">
+              <span className="text-sm">Create Department</span>
             </Link>
           </li>
         </ul>
