@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'; // Import PrismaClient
 
 const db = new PrismaClient();
 
@@ -13,6 +13,9 @@ async function testConnection() {
   }
 }
 
-testConnection();
+// Test connection when running this file directly
+if (require.main === module) {
+  testConnection();
+}
 
-export { db };
+export { db }; // Ensure db is exported

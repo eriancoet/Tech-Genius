@@ -12,12 +12,12 @@ async function createOrUpdateUser() {
       where: { email },
       update: {
         password: hashedPassword,
-        role: 'SUPER USER',
+        role: 'HR_ADMIN',
       },
       create: {
         email,
         password: hashedPassword,
-        role: 'SUPER USER',
+        role: 'HR_ADMIN',
       },
     });
 

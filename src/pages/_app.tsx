@@ -1,11 +1,9 @@
-// src/pages/_app.tsx
-
 import { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { trpc } from '../utils/trpc';
 import { httpBatchLink } from '@trpc/client/links/httpBatchLink';
-import { SessionProvider, useSession } from 'next-auth/react'; // Import useSession
-import '@/styles/globals.css'; // Ensure this path is correct
+import { SessionProvider, useSession } from 'next-auth/react';
+import '@/styles/globals.css';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -21,7 +19,7 @@ const trpcClient = trpc.createClient({
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <SessionProvider session={pageProps.session}> {/* Add SessionProvider */}
+    <SessionProvider session={pageProps.session}>
       <QueryClientProvider client={queryClient}>
         <trpc.Provider client={trpcClient} queryClient={queryClient}>
           <AuthRedirect>
@@ -38,20 +36,20 @@ const AuthRedirect = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   
   useEffect(() => {
-    // If the session status is 'loading', we should not perform any redirect
-    if (status === 'loading') return;
+    if (status === 'loading') return; // Skip redirect during loading
 
-    // Redirect authenticated users only if they are not on the sign-in page
-    if (status === 'authenticated' && router.pathname === '/auth/signin') {
-      router.push('/employees');
-    } else if (status === 'unauthenticated' && router.pathname !== '/auth/signin') {
-      // Redirect unauthenticated users to the sign-in page
-      router.push('/auth/signin');
+    if (status === 'authenticated') {
+      if (router.pathname === '/auth/signin') {
+        router.push('/employees'); // Redirect to employees if authenticated
+      }
+    } else if (status === 'unauthenticated') {
+      if (router.pathname !== '/auth/signin') {
+        router.push('/auth/signin'); // Redirect to sign-in if unauthenticated
+      }
     }
   }, [status, router]);
 
   return <>{children}</>;
 };
-
 
 export default MyApp;

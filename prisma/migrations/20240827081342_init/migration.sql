@@ -23,7 +23,8 @@ CREATE TABLE "Employee" (
 CREATE TABLE "Department" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
-    "status" TEXT NOT NULL
+    "status" BOOLEAN NOT NULL,
+    "managerId" TEXT NOT NULL
 );
 
 -- CreateTable
