@@ -20,7 +20,7 @@ const CreateDepartment: NextPage = () => {
   const router = useRouter();
   const createDepartment = trpc.department.create.useMutation({
     onSuccess: () => {
-      router.push('/department');
+      router.push('/departments');
     },
     onError: (error) => {
       console.error('Error creating department:', error);

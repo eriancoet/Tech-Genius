@@ -36,7 +36,7 @@ const EditDepartment: NextPage = () => {
 
   const updateDepartment = trpc.department.update.useMutation({
     onSuccess: () => {
-      router.push('/department');
+      router.push('/departments');
     },
     onError: (error) => {
       console.error('Error updating department:', error);
