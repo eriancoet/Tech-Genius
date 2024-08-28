@@ -151,12 +151,23 @@ const CreateEmployee: NextPage = () => {
             </select>
             {errors.status && <p className="text-red-500 text-sm col-span-3">{errors.status}</p>}
 
-            <button
-              type="submit"
-              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 col-span-3"
-            >
-              Create Employee
-            </button>
+            <div className="col-span-3 flex justify-end gap-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                style={{ width: '100px', padding: '10px' }}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/employees')}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                style={{ width: '100px', padding: '10px' }}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </div>
       </div>

@@ -91,8 +91,8 @@ const EditDepartment: NextPage = () => {
         <div className="w-full max-w-3xl">
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
             {Object.keys(formData).map((key) => (
-              <div key={key} className="flex items-center space-x-4">
-                <label className="text-sm font-semibold w-1/4">
+              <div key={key} className="flex flex-col">
+                <label className="text-sm font-semibold mb-1">
                   {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                 </label>
                 {key === 'status' ? (
@@ -104,7 +104,7 @@ const EditDepartment: NextPage = () => {
                         status: e.target.value === 'active',
                       })
                     }
-                    className="border border-gray-300 p-2 rounded-md w-3/4"
+                    className="border border-gray-300 p-2 rounded-md"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -115,18 +115,29 @@ const EditDepartment: NextPage = () => {
                     placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                     value={(formData as any)[key]}
                     onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="border border-gray-300 p-2 rounded-md w-3/4"
+                    className="border border-gray-300 p-2 rounded-md"
                   />
                 )}
-                {(errors as any)[key] && <p className="text-red-500 text-sm mt-1 w-3/4">{(errors as any)[key]}</p>}
+                {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
               </div>
             ))}
-            <button
-              type="submit"
-              className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
-            >
-              Update Department
-            </button>
+            <div className="col-span-3 flex justify-end gap-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                style={{ width: '100px', padding: '10px' }}
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/departments')}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                style={{ width: '100px', padding: '10px' }}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </div>
       </div>

@@ -14,7 +14,7 @@ const EditEmployee: NextPage = () => {
     telephoneNumber: '',
     emailAddress: '',
     managerId: '',
-    status: false, // Default boolean value
+    status: 'active', // Default value for dropdown
   });
 
   const [errors, setErrors] = useState({
@@ -52,7 +52,7 @@ const EditEmployee: NextPage = () => {
           telephoneNumber: employee.telephoneNumber,
           emailAddress: employee.emailAddress,
           managerId: employee.managerId,
-          status: employee.status, // Boolean status
+          status: employee.status ? 'active' : 'inactive', // Convert boolean to dropdown value
         });
       }
     }
@@ -97,6 +97,7 @@ const EditEmployee: NextPage = () => {
       await updateEmployee.mutateAsync({
         id: id as string,
         ...formData,
+        status: formData.status === 'active', // Convert dropdown value to boolean
       });
     } catch (error) {
       console.error('Error updating employee:', error);
@@ -118,30 +119,14 @@ const EditEmployee: NextPage = () => {
                   {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                 </label>
                 {key === 'status' ? (
-                  <div className="flex items-center space-x-4">
-                    <label>
-                      <input
-                        type="radio"
-                        name="status"
-                        value="true"
-                        checked={formData.status === true}
-                        onChange={() => setFormData({ ...formData, status: true })}
-                        className="mr-2"
-                      />
-                      Active
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="status"
-                        value="false"
-                        checked={formData.status === false}
-                        onChange={() => setFormData({ ...formData, status: false })}
-                        className="mr-2"
-                      />
-                      Inactive
-                    </label>
-                  </div>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="border border-gray-300 p-2 rounded-md w-full"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
                 ) : (
                   <input
                     type={key === 'emailAddress' ? 'email' : 'text'}
@@ -154,9 +139,21 @@ const EditEmployee: NextPage = () => {
                 {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
               </div>
             ))}
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">
-              Update Employee
-            </button>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/employees')}
+                className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </div>
       </div>
