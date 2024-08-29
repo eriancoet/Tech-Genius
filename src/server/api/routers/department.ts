@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { z } from 'zod';
-
+// dep router
 export const departmentRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     try {

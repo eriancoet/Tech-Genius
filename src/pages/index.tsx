@@ -1,7 +1,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-
+// home page
 const Home = () => {
   const { data: session, status } = useSession();
   const router = useRouter();

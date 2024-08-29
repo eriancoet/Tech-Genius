@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../../utils/trpc'; // Adjust path as needed
 import Layout from '../../../components/Layout';
-
+// edit employee
 const EditEmployee: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;

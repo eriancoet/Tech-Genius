@@ -4,7 +4,7 @@ import Layout from '../../components/Layout';
 import { HiFilter, HiSearch } from 'react-icons/hi';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-
+// index department
 const DepartmentList: NextPage = () => {
   const router = useRouter();
   const { data: departments, isLoading, refetch } = trpc.department.getAll.useQuery();

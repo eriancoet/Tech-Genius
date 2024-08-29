@@ -1,4 +1,4 @@
-// src/server/root.ts
+// src/server/api/root.ts
 import { createTRPCRouter } from './trpc';
 import { employeeRouter } from './routers/employee';
 import { postRouter } from './routers/post';

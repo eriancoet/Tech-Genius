@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Layout from '../../components/Layout';
-
+// create department page
 const CreateDepartment: NextPage = () => {
   const [formData, setFormData] = useState({
     name: '',

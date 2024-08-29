@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../utils/trpc'; // Ensure this points to the correct path
-
+// interface set department
 interface Department {
-  id: string; // Change to string
+  id: string; 
   name: string;
   managerId: string;
-  managerName?: string; // Assuming there's a managerName field
+  managerName?: string; 
   status: boolean;
 }
 
@@ -14,15 +14,16 @@ interface DepartmentListProps {
   departments: Department[];
 }
 
+// department list var
 const DepartmentList: React.FC<DepartmentListProps> = ({ departments }) => {
   const router = useRouter();
   const deactivateDepartment = trpc.department.update.useMutation();
-
-  const handleEdit = (id: string) => { // Change to string
+// handel delete and edit
+  const handleEdit = (id: string) => { 
     router.push(`/department/${id}/edit`);
   };
 
-  const handleDeactivate = async (id: string) => { // Change to string
+  const handleDeactivate = async (id: string) => { 
     if (window.confirm('Are you sure you want to deactivate this department?')) {
       try {
         const department = departments.find(dep => dep.id === id);

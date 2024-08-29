@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../../utils/trpc';
 import Layout from '../../../components/Layout';
-
+// edit department
 const EditDepartment: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
   const { data: department, isLoading } = trpc.department.getOne.useQuery({ id: id as string }, {
-    enabled: !!id, // Only run query if ID is present
+    enabled: !!id, 
   });
 
   const [formData, setFormData] = useState({

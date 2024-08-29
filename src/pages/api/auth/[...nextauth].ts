@@ -12,7 +12,7 @@ interface UserWithRole extends DefaultUser {
 
 // Extend the JWT interface to include role as a string
 interface JWTWithRole extends NextAuthJWT {
-  role?: string; // role can be optional here
+  role?: string; 
 }
 
 export default NextAuth({
@@ -84,7 +84,7 @@ export default NextAuth({
       }
     },
     async redirect({ url, baseUrl }) {
-      // Redirect users to the employee list page after sign-in
+      // Redirect users to the employee list page 
       if (url === baseUrl || url.startsWith(`${baseUrl}/create-employee`) || url.startsWith(`${baseUrl}/other-page`)) {
         return baseUrl + '/employees';
       }

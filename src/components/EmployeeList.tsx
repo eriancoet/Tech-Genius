@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../utils/trpc'; // Import trpc utility
-
+// interface
 interface Employee {
   id: string;
   firstName: string;
@@ -21,7 +21,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const deactivateEmployee = trpc.employee.update.useMutation(); 
 
   console.log('Employees:', employees);
-
+// handle edit and deactivate
   const handleEdit = (id: string) => {
     router.push(`/employees/${id}/edit`);
   };

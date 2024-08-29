@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
-
+// employee router
 export const employeeRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     try {
