@@ -8,7 +8,6 @@ This is a Next.js application built with TypeScript, tRPC, and NextAuth.js, desi
 - **Employee Management**: Create, view, edit, and list employees.
 - **Department Management**: Create, view, edit, and list departments.
 - **Role-Based Access Control**: Different access levels for Super Users, Managers, and Employees.
-- **Responsive Design**: User interfaces are designed to be responsive and user-friendly.
 
 ## Technologies Used
 
