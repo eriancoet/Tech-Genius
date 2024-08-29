@@ -31,7 +31,7 @@ Ensure you have Node.js and npm installed. If not, download and install them fro
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/your-repo-name.git
+   git clone https://github.com/eriancoet/Tech-Genius.git
    cd your-repo-name
 
 2. **Install dependencies:**
