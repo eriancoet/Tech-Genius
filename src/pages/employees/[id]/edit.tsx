@@ -76,7 +76,7 @@ const EditEmployee: NextPage = () => {
     let hasError = false;
 
     for (const key in formData) {
-      if (!formData[key as keyof typeof formData] && key !== 'status') {
+      if (!formData[key as keyof typeof formData] && key !== 'status' && key !== 'managerId') {
         newErrors[key as keyof typeof formData] = 'This field is required';
         hasError = true;
       }
@@ -118,12 +118,23 @@ const EditEmployee: NextPage = () => {
         <h1 className="text-2xl font-bold mb-4 border-b border-gray-300 pb-2">Edit Employee</h1>
         <div className="w-full max-w-3xl">
           <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+            {/* Render form fields */}
             {Object.keys(formData).map((key) => (
               <div key={key} className="flex flex-col">
                 <label className="text-sm font-semibold mb-1">
                   {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                 </label>
-                {key === 'status' && userRole === 'HR_ADMIN' ? (
+
+                {/* Only HR_ADMIN should see the managerId field */}
+                {key === 'managerId' && userRole === 'HR_ADMIN' ? (
+                  <input
+                    type="text"
+                    placeholder="Manager ID"
+                    value={formData.managerId}
+                    onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
+                    className="border border-gray-300 p-2 rounded-md w-full"
+                  />
+                ) : key === 'status' && userRole === 'HR_ADMIN' ? (
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -132,17 +143,16 @@ const EditEmployee: NextPage = () => {
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
-                ) : (
-                  key !== 'status' && (
-                    <input
-                      type={key === 'emailAddress' ? 'email' : 'text'}
-                      placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                      value={(formData as any)[key]}
-                      onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                      className="border border-gray-300 p-2 rounded-md w-full"
-                    />
-                  )
+                ) : key !== 'managerId' && key !== 'status' && (
+                  <input
+                    type={key === 'emailAddress' ? 'email' : 'text'}
+                    placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                    value={(formData as any)[key]}
+                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                    className="border border-gray-300 p-2 rounded-md w-full"
+                  />
                 )}
+
                 {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
               </div>
             ))}
