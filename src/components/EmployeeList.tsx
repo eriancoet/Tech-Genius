@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../utils/trpc'; // Import trpc utility
+import { useSession } from 'next-auth/react'; // Import useSession to get user details
+
 // interface
 interface Employee {
   id: string;
@@ -8,7 +10,7 @@ interface Employee {
   lastName: string;
   telephoneNumber: string;
   emailAddress: string;
-  status: boolean; 
+  status: boolean;
   managerId: string;
 }
 
@@ -18,10 +20,13 @@ interface EmployeeListProps {
 
 const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const router = useRouter();
-  const deactivateEmployee = trpc.employee.update.useMutation(); 
+  const { data: session } = useSession();
+  const userRole = session?.user?.role; // Get the user's role from session
+  const deactivateEmployee = trpc.employee.update.useMutation();
 
   console.log('Employees:', employees);
-// handle edit and deactivate
+
+  // handle edit and deactivate
   const handleEdit = (id: string) => {
     router.push(`/employees/${id}/edit`);
   };
@@ -75,7 +80,7 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
                     >
                       Edit
                     </button>
-                    {employee.status && (
+                    {employee.status && userRole === 'HR_ADMIN' && (
                       <button
                         onClick={() => handleDeactivate(employee.id)}
                         className="text-red-500 hover:underline text-xs px-2 py-1 rounded border border-red-500"
@@ -101,15 +106,6 @@ const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
             )}
           </tbody>
         </table>
-      </div>
-      <div className="mt-4 bg-gray-200 p-4">
-        <p>Filter options go here</p>
-        <div className="flex space-x-4">
-          <select className="border border-gray-300 rounded p-1 w-4/5 md:w-3/4 text-xs">
-            {/* Filter options */}
-          </select>
-          {/* Add more filters as needed */}
-        </div>
       </div>
     </div>
   );
