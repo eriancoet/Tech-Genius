@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { trpc } from '../utils/trpc'; // Import trpc utility
 import { useSession } from 'next-auth/react'; // Import useSession to get user details
 
+
 // interface
 interface Employee {
   id: string;
@@ -21,7 +22,8 @@ interface EmployeeListProps {
 const EmployeeList: React.FC<EmployeeListProps> = ({ employees }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const userRole = session?.user?.role; // Get the user's role from session
+  const user = session?.user as { id: string; email: string; role: string } | undefined;
+  const userRole = user?.role;
   const deactivateEmployee = trpc.employee.update.useMutation();
 
   console.log('Employees:', employees);

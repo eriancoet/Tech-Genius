@@ -75,7 +75,7 @@ export default NextAuth({
     async jwt({ token, user }: { token: JWTWithRole; user?: UserWithRole }) {
       try {
         if (user) {
-          token.role = user.role;
+          token.role = user.role; // Attach role to the token
         }
         return token;
       } catch (error) {

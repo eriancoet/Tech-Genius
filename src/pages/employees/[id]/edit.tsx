@@ -11,7 +11,9 @@ const EditEmployee: NextPage = () => {
   const { id } = router.query;
 
   const { data: session } = useSession();
-  const userRole = session?.user?.role;
+  // Explicitly cast session.user as the extended type to include role
+  const user = session?.user as { id: string; email: string; role: string } | undefined;
+  const userRole = user?.role;
 
   const [formData, setFormData] = useState({
     firstName: '',

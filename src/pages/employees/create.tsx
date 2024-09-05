@@ -26,20 +26,23 @@ const CreateEmployee: NextPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  // Explicitly cast session.user to the correct shape
+  const user = session?.user as { id: string; email: string; role: string } | undefined;
+
   // Redirect unauthorized users (non-HR_ADMIN role) to another page
   useEffect(() => {
     if (status === 'loading') return; // Do nothing while loading
 
-    if (!session || session.user.role !== 'HR_ADMIN') {
+    if (!user || user.role !== 'HR_ADMIN') {
       router.push('/unauthorized'); // Redirect to an unauthorized page or homepage
     }
-  }, [session, status, router]);
+  }, [user, status, router]);
 
   if (status === 'loading') {
     return <p>Loading...</p>; // Return a loading state while checking the session
   }
 
-  if (!session || session.user.role !== 'HR_ADMIN') {
+  if (!user || user.role !== 'HR_ADMIN') {
     return null; // Return null if the user is not authorized (the redirect will happen)
   }
 

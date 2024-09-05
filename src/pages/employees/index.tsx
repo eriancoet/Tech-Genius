@@ -43,7 +43,7 @@ const EmployeeList: NextPage = () => {
             lastName: employee.lastName,
             telephoneNumber: employee.telephoneNumber,
             emailAddress: employee.emailAddress,
-            managerId: employee.managerId,
+            managerId: employee.managerId ?? '', // Handle null values by providing an empty string fallback
             status: false, // Set status to inactive
           });
           refetch(); // Refetch the list of employees after deactivation
