@@ -1,83 +1,55 @@
 import { NextPage } from 'next';
-import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Layout from '../../components/Layout';
-// create employee
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Define the Zod schema for validation
+const employeeSchema = z.object({
+  firstName: z.string().min(1, 'First Name is required'),
+  lastName: z.string().min(1, 'Last Name is required'),
+  telephoneNumber: z.string().min(10, 'Telephone Number must be at least 10 digits'),
+  emailAddress: z.string().email('Invalid email address'),
+  managerId: z.string().min(1, 'Manager ID is required'),
+  status: z.enum(['active', 'inactive']),
+});
+
+// Infer the form data type from the schema
+type EmployeeFormData = z.infer<typeof employeeSchema>;
+
+// Create employee component
 const CreateEmployee: NextPage = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    telephoneNumber: '',
-    emailAddress: '',
-    managerId: '',
-    status: 'active', // Default value for dropdown
-  });
-
-  const [errors, setErrors] = useState({
-    firstName: '',
-    lastName: '',
-    telephoneNumber: '',
-    emailAddress: '',
-    managerId: '',
-    status: '',
-  });
-
   const router = useRouter();
+
+  // Initialize the form using React Hook Form and Zod resolver
+  const { register, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({
+    resolver: zodResolver(employeeSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      telephoneNumber: '',
+      emailAddress: '',
+      managerId: '',
+      status: 'active',
+    },
+  });
+
   const createEmployee = trpc.employee.create.useMutation({
     onSuccess: () => {
       router.push('/employees'); // Redirect to employee list page on success
     },
     onError: (error) => {
       console.error('Error creating employee:', error);
-      if (error instanceof Error && error.message.includes('Unique constraint failed')) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          emailAddress: 'An employee with this email address already exists',
-        }));
-      }
     },
   });
 
-  const validateForm = () => {
-    const newErrors: { [key in keyof typeof formData]: string } = {
-      firstName: '',
-      lastName: '',
-      telephoneNumber: '',
-      emailAddress: '',
-      managerId: '',
-      status: '',
-    };
-
-    let hasError = false;
-
-    for (const key in formData) {
-      if (!formData[key as keyof typeof formData]) {
-        newErrors[key as keyof typeof formData] = 'This field is required';
-        hasError = true;
-      }
-    }
-
-    if (formData.emailAddress && !/\S+@\S+\.\S+/.test(formData.emailAddress)) {
-      newErrors.emailAddress = 'Invalid email address';
-      hasError = true;
-    }
-
-    setErrors(newErrors);
-    return !hasError;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const onSubmit = async (data: EmployeeFormData) => {
     try {
       await createEmployee.mutateAsync({
-        ...formData,
-        status: formData.status === 'active',
+        ...data,
+        status: data.status === 'active',
       });
     } catch (error) {
       console.error('Error creating employee:', error);
@@ -89,67 +61,61 @@ const CreateEmployee: NextPage = () => {
       <div className="flex flex-col items-start p-4">
         <h1 className="text-2xl font-bold mb-4 border-b border-gray-300 pb-2">Create Employee</h1>
         <div className="w-full max-w-3xl">
-          <form onSubmit={handleSubmit} className="grid grid-cols-3 gap-4 items-center">
+          <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-3 gap-4 items-center">
             <label className="text-sm font-semibold mb-1">First Name</label>
             <input
               type="text"
               placeholder="First Name"
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+              {...register('firstName')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
-            {errors.firstName && <p className="text-red-500 text-sm col-span-3">{errors.firstName}</p>}
+            {errors.firstName && <p className="text-red-500 text-sm col-span-3">{errors.firstName.message}</p>}
 
             <label className="text-sm font-semibold mb-1">Last Name</label>
             <input
               type="text"
               placeholder="Last Name"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+              {...register('lastName')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
-            {errors.lastName && <p className="text-red-500 text-sm col-span-3">{errors.lastName}</p>}
+            {errors.lastName && <p className="text-red-500 text-sm col-span-3">{errors.lastName.message}</p>}
 
             <label className="text-sm font-semibold mb-1">Telephone Number</label>
             <input
               type="text"
               placeholder="Telephone Number"
-              value={formData.telephoneNumber}
-              onChange={(e) => setFormData({ ...formData, telephoneNumber: e.target.value })}
+              {...register('telephoneNumber')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
-            {errors.telephoneNumber && <p className="text-red-500 text-sm col-span-3">{errors.telephoneNumber}</p>}
+            {errors.telephoneNumber && <p className="text-red-500 text-sm col-span-3">{errors.telephoneNumber.message}</p>}
 
             <label className="text-sm font-semibold mb-1">Email Address</label>
             <input
               type="email"
               placeholder="Email Address"
-              value={formData.emailAddress}
-              onChange={(e) => setFormData({ ...formData, emailAddress: e.target.value })}
+              {...register('emailAddress')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
-            {errors.emailAddress && <p className="text-red-500 text-sm col-span-3">{errors.emailAddress}</p>}
+            {errors.emailAddress && <p className="text-red-500 text-sm col-span-3">{errors.emailAddress.message}</p>}
 
             <label className="text-sm font-semibold mb-1">Manager ID</label>
             <input
               type="text"
               placeholder="Manager ID"
-              value={formData.managerId}
-              onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
+              {...register('managerId')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
-            {errors.managerId && <p className="text-red-500 text-sm col-span-3">{errors.managerId}</p>}
+            {errors.managerId && <p className="text-red-500 text-sm col-span-3">{errors.managerId.message}</p>}
 
             <label className="text-sm font-semibold mb-1">Status</label>
             <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              {...register('status')}
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
-            {errors.status && <p className="text-red-500 text-sm col-span-3">{errors.status}</p>}
+            {errors.status && <p className="text-red-500 text-sm col-span-3">{errors.status.message}</p>}
 
             <div className="col-span-3 flex justify-end gap-4">
               <button

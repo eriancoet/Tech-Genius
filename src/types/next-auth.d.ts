@@ -1,5 +1,4 @@
-// next-auth.d.ts (or another type declaration file)
-
+// /types/next-auth.d.ts
 import { DefaultSession, DefaultUser } from "next-auth";
 
 declare module "next-auth" {
@@ -10,7 +9,7 @@ declare module "next-auth" {
       role: string;
       name?: string | null;
       image?: string | null;
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 
   interface User extends DefaultUser {

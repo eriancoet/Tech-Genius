@@ -22,7 +22,11 @@
       "dom.iterable",
       "esnext"
     ],
-    "isolatedModules": true
+    "isolatedModules": true,
+    "typeRoots": [
+      "./types",  // Add this to ensure TypeScript recognizes custom types
+      "./node_modules/@types"
+    ]
   },
   "include": [
     "next-env.d.ts",

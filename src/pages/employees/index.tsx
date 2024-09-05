@@ -4,11 +4,16 @@ import Layout from '../../components/Layout';
 import { HiFilter, HiSearch } from 'react-icons/hi';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
-// index employe
+import { useSession } from 'next-auth/react';
+
 const EmployeeList: NextPage = () => {
+
   const router = useRouter();
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
+
   const { data: employees, isLoading, refetch } = trpc.employee.getAll.useQuery();
-  const updateEmployee = trpc.employee.update.useMutation(); // Use update mutation for deactivation
+  const updateEmployee = trpc.employee.update.useMutation();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -20,6 +25,11 @@ const EmployeeList: NextPage = () => {
   };
 
   const handleDeactivate = async (id: string) => {
+    if (userRole !== 'HR_ADMIN') {
+      alert('You do not have permission to deactivate this employee.');
+      return;
+    }
+  
     if (window.confirm('Are you sure you want to deactivate this employee?')) {
       try {
         const employee = employees?.find(emp => emp.id === id);
@@ -40,15 +50,25 @@ const EmployeeList: NextPage = () => {
       }
     }
   };
+  
 
   if (isLoading) return <div>Loading...</div>;
 
   const filteredEmployees = employees?.filter(employee => {
+    // Filtering based on role
+    if (userRole === 'EMPLOYEE') {
+      return employee.emailAddress === session?.user?.email;
+    }
+    if (userRole === 'MANAGER') {
+      return employee.department === session?.user?.departmentId;
+    }
+
+    // Apply filters
     return (
       (statusFilter === 'All' || (statusFilter === 'Active' && employee.status) || (statusFilter === 'Deactive' && !employee.status)) &&
       (departmentFilter === '' || employee.department === departmentFilter) &&
       (managerFilter === '' || employee.managerId === managerFilter) &&
-      (employee.firstName.toLowerCase().includes(search.toLowerCase()) || 
+      (employee.firstName.toLowerCase().includes(search.toLowerCase()) ||
        employee.lastName.toLowerCase().includes(search.toLowerCase()))
     );
   });
@@ -143,16 +163,16 @@ const EmployeeList: NextPage = () => {
             {filteredEmployees && filteredEmployees.length > 0 ? (
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
-  <tr>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Actions</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">First Name</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Last Name</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Telephone</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Email Address</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Manager</th>
-    <th className="py-2 px-4 border-b border-gray-300 text-xs">Status</th>
-  </tr>
-</thead>
+                  <tr>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Actions</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">First Name</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Last Name</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Telephone</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Email Address</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Manager</th>
+                    <th className="py-2 px-4 border-b border-gray-300 text-xs">Status</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {filteredEmployees.map(employee => (
                     <tr key={employee.id}>
@@ -163,12 +183,14 @@ const EmployeeList: NextPage = () => {
                         >
                           Edit
                         </button>
-                        <button
-                          onClick={() => handleDeactivate(employee.id)}
-                          className="py-2 px-4 border-b border-gray-300 text-xs"
-                        >
-                          Deactivate
-                        </button>
+                        {userRole === 'HR_ADMIN' && (
+                          <button
+                            onClick={() => handleDeactivate(employee.id)}
+                            className="py-2 px-4 border-b border-gray-300 text-xs"
+                          >
+                            Deactivate
+                          </button>
+                        )}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-300 text-xs">{employee.firstName}</td>
                       <td className="py-2 px-4 border-b border-gray-300 text-xs">{employee.lastName}</td>
