@@ -7,10 +7,9 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 
 const EmployeeList: NextPage = () => {
-
   const router = useRouter();
   const { data: session } = useSession();
-  
+
   // Assert the type of session.user to include the role
   const user = session?.user as { id: string; email: string; role: string };
   const userRole = user?.role;
@@ -56,23 +55,32 @@ const EmployeeList: NextPage = () => {
 
   if (isLoading) return <div>Loading...</div>;
 
+  // Combine role-based and search/filter-based filtering logic
   const filteredEmployees = employees?.filter(employee => {
-    // Filtering based on role
+    // Role-based filtering
     if (userRole === 'EMPLOYEE') {
       return employee.emailAddress === session?.user?.email;
     }
     if (userRole === 'MANAGER') {
-      return true; 
+      return true; // Manager can see all employees
     }
-    
 
-    // Apply filters
-    return (
-      (statusFilter === 'All' || (statusFilter === 'Active' && employee.status) || (statusFilter === 'Deactive' && !employee.status)) &&
-      (managerFilter === '' || employee.managerId === managerFilter) &&
-      (employee.firstName.toLowerCase().includes(search.toLowerCase()) ||
-       employee.lastName.toLowerCase().includes(search.toLowerCase()))
-    );
+    // Search and filter conditions for other roles
+    const matchesSearch = search
+      ? employee.firstName.toLowerCase().includes(search.toLowerCase()) ||
+        employee.lastName.toLowerCase().includes(search.toLowerCase()) ||
+        employee.emailAddress.toLowerCase().includes(search.toLowerCase())
+      : true;
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      (statusFilter === 'Active' && employee.status) ||
+      (statusFilter === 'Deactive' && !employee.status);
+
+    const matchesDepartment = departmentFilter === '' || employee.id === departmentFilter;
+    const matchesManager = managerFilter === '' || employee.managerId === managerFilter;
+
+    return matchesSearch && matchesStatus && matchesDepartment && matchesManager;
   });
 
   return (
@@ -82,9 +90,7 @@ const EmployeeList: NextPage = () => {
 
         <div className="w-full max-w-3xl">
           <aside className="bg-gray-200 p-4 mb-4 border border-gray-300 rounded-md relative">
-            <h2 className="text-lg font-semibold absolute -top-4 left-4 border-b border-gray-300 px-2">
-              Filter
-            </h2>
+            <h2 className="text-lg font-semibold absolute -top-4 left-4 border-b border-gray-300 px-2">Filter</h2>
 
             <div className="space-y-4 mt-8">
               <div className="flex items-center space-x-2">
