@@ -8,20 +8,18 @@ import { z } from 'zod';
 import { useSession } from 'next-auth/react';
 import { useEffect } from 'react';
 
-// Define the Zod schema for validation
+// Define the Zod schema for validation (without status)
 const employeeSchema = z.object({
   firstName: z.string().min(1, 'First Name is required'),
   lastName: z.string().min(1, 'Last Name is required'),
   telephoneNumber: z.string().min(10, 'Telephone Number must be at least 10 digits'),
   emailAddress: z.string().email('Invalid email address'),
   managerId: z.string().optional(), // Manager ID is now optional
-  status: z.enum(['active', 'inactive']),
 });
 
 // Infer the form data type from the schema
 type EmployeeFormData = z.infer<typeof employeeSchema>;
 
-// Create employee component
 const CreateEmployee: NextPage = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -55,7 +53,6 @@ const CreateEmployee: NextPage = () => {
       telephoneNumber: '',
       emailAddress: '',
       managerId: '', // Optional field
-      status: 'active',
     },
   });
 
@@ -73,7 +70,7 @@ const CreateEmployee: NextPage = () => {
       await createEmployee.mutateAsync({
         ...data,
         managerId: data.managerId || undefined, // Ensure managerId is handled as undefined if not provided
-        status: data.status === 'active',
+        status: true, // Set status to true (active) by default
       });
     } catch (error) {
       console.error('Error creating employee:', error);
@@ -130,16 +127,6 @@ const CreateEmployee: NextPage = () => {
               className="border border-gray-300 p-2 rounded-md w-full col-span-2"
             />
             {errors.managerId && <p className="text-red-500 text-sm col-span-3">{errors.managerId.message}</p>}
-
-            <label className="text-sm font-semibold mb-1">Status</label>
-            <select
-              {...register('status')}
-              className="border border-gray-300 p-2 rounded-md w-full col-span-2"
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            {errors.status && <p className="text-red-500 text-sm col-span-3">{errors.status.message}</p>}
 
             <div className="col-span-3 flex justify-end gap-4">
               <button
