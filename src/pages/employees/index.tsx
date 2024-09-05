@@ -11,6 +11,7 @@ const EmployeeList: NextPage = () => {
   const { data: session } = useSession();
 
   // Assert the type of session.user to include the role
+  
   const user = session?.user as { id: string; email: string; role: string };
   const userRole = user?.role;
 

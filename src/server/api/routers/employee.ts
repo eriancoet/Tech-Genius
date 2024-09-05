@@ -107,7 +107,7 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId || '', // Pass undefined if managerId is not provided
+            managerId: input.managerId || "", // Pass undefined if managerId is not provided
             status: input.status, // Boolean status
           },
         });
