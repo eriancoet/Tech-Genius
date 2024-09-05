@@ -36,10 +36,14 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             </li>
           )}
           <li>
+             {/* Conditionally render "Create Employee" based on user role */}
+          {userRole === 'HR_ADMIN' && (
             <Link href="/departments/create">
               <span className="text-sm">Create Department</span>
             </Link>
+             )}
           </li>
+       
         </ul>
       </nav>
     </aside>
