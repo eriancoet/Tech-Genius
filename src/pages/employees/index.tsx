@@ -10,7 +10,10 @@ const EmployeeList: NextPage = () => {
 
   const router = useRouter();
   const { data: session } = useSession();
-  const userRole = session?.user?.role;
+  
+  // Assert the type of session.user to include the role
+  const user = session?.user as { id: string; email: string; role: string };
+  const userRole = user?.role;
 
   const { data: employees, isLoading, refetch } = trpc.employee.getAll.useQuery();
   const updateEmployee = trpc.employee.update.useMutation();
@@ -29,7 +32,7 @@ const EmployeeList: NextPage = () => {
       alert('You do not have permission to deactivate this employee.');
       return;
     }
-  
+
     if (window.confirm('Are you sure you want to deactivate this employee?')) {
       try {
         const employee = employees?.find(emp => emp.id === id);
@@ -50,7 +53,6 @@ const EmployeeList: NextPage = () => {
       }
     }
   };
-  
 
   if (isLoading) return <div>Loading...</div>;
 

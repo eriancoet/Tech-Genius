@@ -11,7 +11,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const { data: session } = useSession(); // Get the user session
 
   // Extract the user role from the session (assumes role is stored in session.user.role)
-  const userRole = session?.user?.role;
+  const userRole = (session?.user as { id: string; role: string })?.role;
 
   return (
     <aside className={`w-[250px] h-[400px] bg-gray-700 text-white p-4 ${className}`}>
@@ -35,14 +35,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               </Link>
             </li>
           )}
-          <li>
-             {/* Conditionally render "Create Employee" based on user role */}
-          {userRole === 'HR_ADMIN' && (
+       <li>
+          {/* Conditionally render "Create Department" based on user role */}
+          {(userRole === 'HR_ADMIN' || userRole === 'MANAGER') && (
             <Link href="/departments/create">
               <span className="text-sm">Create Department</span>
             </Link>
-             )}
-          </li>
+          )}
+        </li>
+
        
         </ul>
       </nav>
