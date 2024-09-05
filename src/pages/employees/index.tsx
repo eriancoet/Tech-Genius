@@ -62,13 +62,13 @@ const EmployeeList: NextPage = () => {
       return employee.emailAddress === session?.user?.email;
     }
     if (userRole === 'MANAGER') {
-      return employee.department === session?.user?.departmentId;
+      return true; 
     }
+    
 
     // Apply filters
     return (
       (statusFilter === 'All' || (statusFilter === 'Active' && employee.status) || (statusFilter === 'Deactive' && !employee.status)) &&
-      (departmentFilter === '' || employee.department === departmentFilter) &&
       (managerFilter === '' || employee.managerId === managerFilter) &&
       (employee.firstName.toLowerCase().includes(search.toLowerCase()) ||
        employee.lastName.toLowerCase().includes(search.toLowerCase()))
