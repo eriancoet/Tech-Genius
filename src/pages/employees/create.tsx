@@ -5,6 +5,8 @@ import Layout from '../../components/Layout';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
 
 // Define the Zod schema for validation
 const employeeSchema = z.object({
@@ -22,6 +24,24 @@ type EmployeeFormData = z.infer<typeof employeeSchema>;
 // Create employee component
 const CreateEmployee: NextPage = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Redirect unauthorized users (non-HR_ADMIN role) to another page
+  useEffect(() => {
+    if (status === 'loading') return; // Do nothing while loading
+
+    if (!session || session.user.role !== 'HR_ADMIN') {
+      router.push('/unauthorized'); // Redirect to an unauthorized page or homepage
+    }
+  }, [session, status, router]);
+
+  if (status === 'loading') {
+    return <p>Loading...</p>; // Return a loading state while checking the session
+  }
+
+  if (!session || session.user.role !== 'HR_ADMIN') {
+    return null; // Return null if the user is not authorized (the redirect will happen)
+  }
 
   // Initialize the form using React Hook Form and Zod resolver
   const { register, handleSubmit, formState: { errors } } = useForm<EmployeeFormData>({

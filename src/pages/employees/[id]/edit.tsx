@@ -3,10 +3,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { trpc } from '../../../utils/trpc'; // Adjust path as needed
 import Layout from '../../../components/Layout';
+import { useSession } from 'next-auth/react';
+
 // edit employee
 const EditEmployee: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
+
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -118,7 +123,7 @@ const EditEmployee: NextPage = () => {
                 <label className="text-sm font-semibold mb-1">
                   {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
                 </label>
-                {key === 'status' ? (
+                {key === 'status' && userRole === 'HR_ADMIN' ? (
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -128,13 +133,15 @@ const EditEmployee: NextPage = () => {
                     <option value="inactive">Inactive</option>
                   </select>
                 ) : (
-                  <input
-                    type={key === 'emailAddress' ? 'email' : 'text'}
-                    placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                    value={(formData as any)[key]}
-                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="border border-gray-300 p-2 rounded-md w-full"
-                  />
+                  key !== 'status' && (
+                    <input
+                      type={key === 'emailAddress' ? 'email' : 'text'}
+                      placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                      value={(formData as any)[key]}
+                      onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                      className="border border-gray-300 p-2 rounded-md w-full"
+                    />
+                  )
                 )}
                 {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
               </div>
