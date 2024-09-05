@@ -23,7 +23,7 @@ model Employee {
   lastName        String
   telephoneNumber String
   emailAddress    String   @unique
-  managerId       String
+  managerId       String?   // Make managerId optional
   status          Boolean  // Change to Boolean
   user            User?    @relation
 }

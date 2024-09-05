@@ -27,6 +27,7 @@ const Home = () => {
   if (!session) return null; // Return null if not authenticated
 
   const user = session.user as { id: string; email: string; role: string; name?: string; image?: string };
+  console.log(`User role on client-side: ${user.role}`);
 
   return (
     <div>

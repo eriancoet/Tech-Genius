@@ -1,6 +1,8 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
+import { TRPCError } from '@trpc/server';
+
 // employee router
 export const employeeRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -18,7 +20,11 @@ export const employeeRouter = createTRPCRouter({
       });
     } catch (error) {
       console.error('Error fetching employees:', error);
-      throw new Error('Failed to fetch employees');
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch employees',
+        cause: error,
+      });
     }
   }),
 
@@ -29,29 +35,32 @@ export const employeeRouter = createTRPCRouter({
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string(),
+        managerId: z.string().optional(), // Manager ID is optional
         status: z.boolean(), // Boolean status
-        userId: z.string().optional(), // Remove if not used
+        userId: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       try {
         let userId = input.userId;
-
+  
+        // If userId is not provided, create a new user
         if (!userId) {
-          // Hash the default password
           const hashedPassword = await bcrypt.hash('Password123#', 10);
-
-          // Create a new user if userId is not provided
+          
+          // Determine the role based on managerId
+          const role = input.managerId ? 'MANAGER' : 'EMPLOYEE';
+          console.log(`Role assigned on create: ${role}`);
           const user = await ctx.prisma.user.create({
             data: {
               email: input.emailAddress,
               password: hashedPassword,
-              role: 'EMPLOYEE',
+              role, // Set role based on whether managerId is provided
             },
           });
           userId = user.id;
         }
+  
 
         // Create the employee and link to the user
         return await ctx.prisma.employee.create({
@@ -60,7 +69,7 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId,
+            managerId: input.managerId || '', // Pass an empty string if managerId is not provided
             status: input.status, // Boolean status
             user: {
               connect: { id: userId }, // Connect the employee with the existing or new user
@@ -69,7 +78,11 @@ export const employeeRouter = createTRPCRouter({
         });
       } catch (error) {
         console.error('Error creating employee:', error);
-        throw new Error('Failed to create employee');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create employee',
+          cause: error,
+        });
       }
     }),
 
@@ -81,7 +94,7 @@ export const employeeRouter = createTRPCRouter({
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string(),
+        managerId: z.string().optional(), // Manager ID is optional
         status: z.boolean(), // Boolean status
       })
     )
@@ -94,13 +107,19 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId,
+            managerId: input.managerId || undefined, // Pass undefined if managerId is not provided
             status: input.status, // Boolean status
           },
         });
+
+  
       } catch (error) {
         console.error('Error updating employee:', error);
-        throw new Error('Failed to update employee');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update employee',
+          cause: error,
+        });
       }
     }),
 
@@ -113,7 +132,11 @@ export const employeeRouter = createTRPCRouter({
         });
       } catch (error) {
         console.error('Error deleting employee:', error);
-        throw new Error('Failed to delete employee');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to delete employee',
+          cause: error,
+        });
       }
     }),
 });

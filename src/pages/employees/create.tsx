@@ -12,7 +12,7 @@ const employeeSchema = z.object({
   lastName: z.string().min(1, 'Last Name is required'),
   telephoneNumber: z.string().min(10, 'Telephone Number must be at least 10 digits'),
   emailAddress: z.string().email('Invalid email address'),
-  managerId: z.string().min(1, 'Manager ID is required'),
+  managerId: z.string().optional(), // Manager ID is now optional
   status: z.enum(['active', 'inactive']),
 });
 
@@ -31,7 +31,7 @@ const CreateEmployee: NextPage = () => {
       lastName: '',
       telephoneNumber: '',
       emailAddress: '',
-      managerId: '',
+      managerId: '', // Optional field
       status: 'active',
     },
   });
@@ -49,6 +49,7 @@ const CreateEmployee: NextPage = () => {
     try {
       await createEmployee.mutateAsync({
         ...data,
+        managerId: data.managerId || undefined, // Ensure managerId is handled as undefined if not provided
         status: data.status === 'active',
       });
     } catch (error) {
