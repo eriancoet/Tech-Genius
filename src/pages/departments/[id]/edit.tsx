@@ -1,39 +1,46 @@
 import { NextPage } from 'next';
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { trpc } from '../../../utils/trpc';
+import { trpc } from '../../../utils/trpc'; 
 import Layout from '../../../components/Layout';
-// edit department
+import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+
+// Define the form data type
+type DepartmentFormData = {
+  name: string;
+  managerId: string;
+  status: boolean;
+};
+
 const EditDepartment: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const { data: department, isLoading } = trpc.department.getOne.useQuery({ id: id as string }, {
-    enabled: !!id, 
+  // Fetch department data using TRPC
+  const { data: department, isLoading } = trpc.department.getOne.useQuery(
+    { id: id as string },
+    { enabled: !!id }
+  );
+
+  // Use react-hook-form to manage form state
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<DepartmentFormData>({
+    defaultValues: {
+      name: '',
+      managerId: '',
+      status: false,
+    },
   });
 
-  const [formData, setFormData] = useState({
-    name: '',
-    managerId: '',
-    status: false,
-  });
-
-  const [errors, setErrors] = useState({
-    name: '',
-    managerId: '',
-    status: '',
-  });
-
+  // Set form values once department data is loaded
   useEffect(() => {
     if (department) {
-      setFormData({
-        name: department.name,
-        managerId: department.managerId,
-        status: department.status,
-      });
+      setValue('name', department.name);
+      setValue('managerId', department.managerId ?? '');
+      setValue('status', department.status ?? false);
     }
-  }, [department]);
+  }, [department, setValue]);
 
+  // Update department using TRPC mutation
   const updateDepartment = trpc.department.update.useMutation({
     onSuccess: () => {
       router.push('/departments');
@@ -43,84 +50,61 @@ const EditDepartment: NextPage = () => {
     },
   });
 
-  const validateForm = () => {
-    const newErrors: { [key in keyof typeof formData]: string } = {
-      name: '',
-      managerId: '',
-      status: '',
+  // Rename the custom handleSubmit function to onFormSubmit
+  const onFormSubmit = (formData: DepartmentFormData) => {
+    // Convert the status field back to a boolean
+    const updatedData = {
+      ...formData,
+      status: formData.status === 'true', // Convert string to boolean
     };
-
-    let hasError = false;
-
-    for (const key in formData) {
-      if (!formData[key as keyof typeof formData] && key !== 'status') {
-        newErrors[key as keyof typeof formData] = 'This field is required';
-        hasError = true;
-      }
-    }
-
-    setErrors(newErrors);
-    return !hasError;
+  
+    updateDepartment.mutate({
+      id: id as string,
+      ...updatedData,
+    });
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      await updateDepartment.mutateAsync({
-        id: id as string,
-        ...formData,
-      });
-    } catch (error) {
-      console.error('Error updating department:', error);
-    }
-  };
-
-  if (isLoading || !department) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <Layout>
       <div className="flex flex-col items-start p-4">
         <h1 className="text-2xl font-bold mb-4 border-b border-gray-300 pb-2">Edit Department</h1>
         <div className="w-full max-w-3xl">
-          <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
-            {Object.keys(formData).map((key) => (
-              <div key={key} className="flex flex-col">
-                <label className="text-sm font-semibold mb-1">
-                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                </label>
-                {key === 'status' ? (
-                  <select
-                    value={formData.status ? 'active' : 'inactive'}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        status: e.target.value === 'active',
-                      })
-                    }
-                    className="border border-gray-300 p-2 rounded-md"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    placeholder={key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
-                    value={(formData as any)[key]}
-                    onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                    className="border border-gray-300 p-2 rounded-md"
-                  />
-                )}
-                {(errors as any)[key] && <p className="text-red-500 text-sm mt-1">{(errors as any)[key]}</p>}
-              </div>
-            ))}
+          <form onSubmit={handleSubmit(onFormSubmit)} className="flex flex-col space-y-4">
+            {/* Department Name Field */}
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1">Department Name</label>
+              <input
+                type="text"
+                {...register('name', { required: 'Department name is required' })}
+                className="border border-gray-300 p-2 rounded-md"
+              />
+              {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+            </div>
+
+            {/* Manager ID Field */}
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1">Manager ID</label>
+              <input
+                type="text"
+                {...register('managerId', { required: 'Manager ID is required' })}
+                className="border border-gray-300 p-2 rounded-md"
+              />
+              {errors.managerId && <p className="text-red-500 text-sm">{errors.managerId.message}</p>}
+            </div>
+
+            {/* Status Field */}
+            <div className="flex flex-col">
+              <label className="text-sm font-semibold mb-1">Status</label>
+              <select
+                {...register('status')}
+                className="border border-gray-300 p-2 rounded-md"
+              >
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+
+            {/* Submit and Cancel Buttons */}
             <div className="col-span-3 flex justify-end gap-4">
               <button
                 type="submit"
