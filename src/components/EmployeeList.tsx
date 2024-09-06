@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { trpc } from '../utils/trpc'; // Import trpc utility
-import { useSession } from 'next-auth/react'; // Import useSession to get user details
+import { trpc } from '../utils/trpc'; 
+import { useSession } from 'next-auth/react'; 
 
 
 // interface

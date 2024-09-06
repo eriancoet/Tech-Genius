@@ -31,19 +31,19 @@ const CreateEmployee: NextPage = () => {
 
   // Redirect unauthorized users (non-HR_ADMIN role) to another page
   useEffect(() => {
-    if (status === 'loading') return; // Do nothing while loading
-
+    if (status === 'loading') return; 
+    
     if (!user || user.role !== 'HR_ADMIN') {
-      router.push('/unauthorized'); // Redirect to an unauthorized page or homepage
+      router.push('/unauthorized'); 
     }
   }, [user, status, router]);
 
   if (status === 'loading') {
-    return <p>Loading...</p>; // Return a loading state while checking the session
+    return <p>Loading...</p>; 
   }
 
   if (!user || user.role !== 'HR_ADMIN') {
-    return null; // Return null if the user is not authorized (the redirect will happen)
+    return null; 
   }
 
   // Initialize the form using React Hook Form and Zod resolver
@@ -54,14 +54,14 @@ const CreateEmployee: NextPage = () => {
       lastName: '',
       telephoneNumber: '',
       emailAddress: '',
-      managerId: '', // Optional field
+      managerId: '', 
       status: 'active',
     },
   });
 
   const createEmployee = trpc.employee.create.useMutation({
     onSuccess: () => {
-      router.push('/employees'); // Redirect to employee list page on success
+      router.push('/employees'); 
     },
     onError: (error) => {
       console.error('Error creating employee:', error);
@@ -72,7 +72,7 @@ const CreateEmployee: NextPage = () => {
     try {
       await createEmployee.mutateAsync({
         ...data,
-        managerId: data.managerId || undefined, // Ensure managerId is handled as undefined if not provided
+        managerId: data.managerId || undefined, 
         status: data.status === 'active',
       });
     } catch (error) {

@@ -43,10 +43,10 @@ const EmployeeList: NextPage = () => {
             lastName: employee.lastName,
             telephoneNumber: employee.telephoneNumber,
             emailAddress: employee.emailAddress,
-            managerId: employee.managerId ?? '', // Handle null values by providing an empty string fallback
-            status: false, // Set status to inactive
+            managerId: employee.managerId ?? '', 
+            status: false, 
           });
-          refetch(); // Refetch the list of employees after deactivation
+          refetch(); 
         }
       } catch (error) {
         console.error('Error deactivating employee:', error);

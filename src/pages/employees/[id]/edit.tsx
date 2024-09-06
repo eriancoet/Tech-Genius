@@ -58,8 +58,8 @@ const EditEmployee: NextPage = () => {
           lastName: employee.lastName,
           telephoneNumber: employee.telephoneNumber,
           emailAddress: employee.emailAddress,
-          managerId: employee.managerId ?? '', // Handle null values by providing an empty string fallback
-          status: employee.status ? 'active' : 'inactive', // Convert boolean to dropdown value
+          managerId: employee.managerId ?? '', 
+          status: employee.status ? 'active' : 'inactive', 
         });
       }
     }
@@ -104,7 +104,7 @@ const EditEmployee: NextPage = () => {
       await updateEmployee.mutateAsync({
         id: id as string,
         ...formData,
-        status: formData.status === 'active', // Convert dropdown value to boolean
+        status: formData.status === 'active', 
       });
     } catch (error) {
       console.error('Error updating employee:', error);

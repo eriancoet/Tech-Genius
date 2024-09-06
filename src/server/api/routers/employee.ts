@@ -35,7 +35,7 @@ export const employeeRouter = createTRPCRouter({
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string().optional(), // Manager ID is optional
+        managerId: z.string().optional(), 
         status: z.boolean(), // Boolean status
         userId: z.string().optional(),
       })
@@ -55,7 +55,7 @@ export const employeeRouter = createTRPCRouter({
             data: {
               email: input.emailAddress,
               password: hashedPassword,
-              role, // Set role based on whether managerId is provided
+              role, 
             },
           });
           userId = user.id;
@@ -69,10 +69,10 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId || '', // Pass an empty string if managerId is not provided
+            managerId: input.managerId || '', 
             status: input.status, // Boolean status
             user: {
-              connect: { id: userId }, // Connect the employee with the existing or new user
+              connect: { id: userId }, 
             },
           },
         });
@@ -94,7 +94,7 @@ export const employeeRouter = createTRPCRouter({
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string().optional(), // Manager ID is optional
+        managerId: z.string().optional(), 
         status: z.boolean(), // Boolean status
       })
     )
@@ -107,7 +107,7 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId || "", // Pass undefined if managerId is not provided
+            managerId: input.managerId || "", 
             status: input.status, // Boolean status
           },
         });
@@ -124,7 +124,7 @@ export const employeeRouter = createTRPCRouter({
     }),
 
   delete: publicProcedure
-    .input(z.string()) // Expecting the employee id as a string
+    .input(z.string()) 
     .mutation(async ({ input, ctx }) => {
       try {
         return await ctx.prisma.employee.delete({

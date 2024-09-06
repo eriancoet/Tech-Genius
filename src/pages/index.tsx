@@ -7,7 +7,7 @@ const Home = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Do nothing while loading
+    if (status === "loading") return; 
 
     // Redirect to sign-in page if not authenticated
     if (!session) {
@@ -16,15 +16,15 @@ const Home = () => {
     }
 
     // Check if the user is on a specific page where you don't want to redirect them
-    const excludedPages = ["/employees/create", "/departments/create"]; // Add pages you want to exclude
+    const excludedPages = ["/employees/create", "/departments/create"]; 
     if (!excludedPages.includes(router.pathname)) {
-      // Redirect to employee list view if not on an excluded page
+
       router.push("/employees");
     }
   }, [session, status, router]);
 
   if (status === "loading") return <p>Loading...</p>;
-  if (!session) return null; // Return null if not authenticated
+  if (!session) return null; 
 
   const user = session.user as { id: string; email: string; role: string; name?: string; image?: string };
   console.log(`User role on client-side: ${user.role}`);
