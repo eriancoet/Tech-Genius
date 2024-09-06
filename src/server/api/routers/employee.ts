@@ -1,11 +1,10 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc'; // Import protectedProcedure
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 
-// employee router
 export const employeeRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
       return await ctx.prisma.employee.findMany({
         select: {
@@ -15,7 +14,7 @@ export const employeeRouter = createTRPCRouter({
           telephoneNumber: true,
           emailAddress: true,
           managerId: true,
-          status: true, // Boolean status
+          status: true,
         },
       });
     } catch (error) {
@@ -28,15 +27,15 @@ export const employeeRouter = createTRPCRouter({
     }
   }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         firstName: z.string(),
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string().optional(), 
-        status: z.boolean(), // Boolean status
+        managerId: z.string().optional(),
+        status: z.boolean(),
         userId: z.string().optional(),
       })
     )
@@ -44,35 +43,29 @@ export const employeeRouter = createTRPCRouter({
       try {
         let userId = input.userId;
   
-        // If userId is not provided, create a new user
         if (!userId) {
           const hashedPassword = await bcrypt.hash('Password123#', 10);
-          
-          // Determine the role based on managerId
           const role = input.managerId ? 'MANAGER' : 'EMPLOYEE';
-          console.log(`Role assigned on create: ${role}`);
           const user = await ctx.prisma.user.create({
             data: {
               email: input.emailAddress,
               password: hashedPassword,
-              role, 
+              role,
             },
           });
           userId = user.id;
         }
   
-
-        // Create the employee and link to the user
         return await ctx.prisma.employee.create({
           data: {
             firstName: input.firstName,
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId || '', 
-            status: input.status, // Boolean status
+            managerId: input.managerId || '',
+            status: input.status,
             user: {
-              connect: { id: userId }, 
+              connect: { id: userId },
             },
           },
         });
@@ -86,7 +79,7 @@ export const employeeRouter = createTRPCRouter({
       }
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -94,8 +87,8 @@ export const employeeRouter = createTRPCRouter({
         lastName: z.string(),
         telephoneNumber: z.string(),
         emailAddress: z.string().email(),
-        managerId: z.string().optional(), 
-        status: z.boolean(), // Boolean status
+        managerId: z.string().optional(),
+        status: z.boolean(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -107,12 +100,10 @@ export const employeeRouter = createTRPCRouter({
             lastName: input.lastName,
             telephoneNumber: input.telephoneNumber,
             emailAddress: input.emailAddress,
-            managerId: input.managerId || "", 
-            status: input.status, // Boolean status
+            managerId: input.managerId || '',
+            status: input.status,
           },
         });
-
-  
       } catch (error) {
         console.error('Error updating employee:', error);
         throw new TRPCError({
@@ -123,8 +114,8 @@ export const employeeRouter = createTRPCRouter({
       }
     }),
 
-  delete: publicProcedure
-    .input(z.string()) 
+  delete: protectedProcedure
+    .input(z.string())
     .mutation(async ({ input, ctx }) => {
       try {
         return await ctx.prisma.employee.delete({
